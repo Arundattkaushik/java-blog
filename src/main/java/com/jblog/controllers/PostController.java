@@ -10,14 +10,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jblog.configs.AppConstants;
 import com.jblog.entities.Category;
 import com.jblog.entities.Post;
+import com.jblog.entities.PostCustomResponse;
 import com.jblog.entities.User;
 import com.jblog.services.CategoryService;
 import com.jblog.services.PostService;
@@ -104,14 +107,19 @@ public class PostController {
 	}
 	
 	@GetMapping("/list")
-	public ResponseEntity<List<Post>> getAllPosts(){
-		List<Post> pList = this.postService.getAllPosts();
+	public ResponseEntity<PostCustomResponse> getAllPosts(
+			@RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) int pageSize,
+			@RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) int pageNumber,
+			@RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIRECTION, required = false) String sortDir
+			){
+		PostCustomResponse customResponse = this.postService.getAllPosts(pageSize, pageNumber, sortBy, sortDir);
 		
-		if (pList == null) {
+		if (customResponse == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
 		else {
-			return ResponseEntity.of(Optional.of(pList));
+			return ResponseEntity.of(Optional.of(customResponse));
 		}
 	}
 	
@@ -120,5 +128,17 @@ public class PostController {
 	public ResponseEntity<Map<String, String>> deletePostById(@RequestParam int pId){
 		this.postService.deletePostById(pId);
 		return new ResponseEntity(Map.of("msg", "success"), HttpStatus.OK);
+	}
+	
+	@GetMapping("/search/{title}")
+	public ResponseEntity<List<Post>> findPostByContent(@PathVariable("title") String title){
+		List<Post> posts = this.postService.searchPostsByTitle("%"+title+"%");
+		
+		if (posts == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		else {
+			return ResponseEntity.of(Optional.of(posts));
+		}
 	}
 }
