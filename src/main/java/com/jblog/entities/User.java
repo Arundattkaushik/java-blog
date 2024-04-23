@@ -1,8 +1,13 @@
 package com.jblog.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -34,6 +39,7 @@ public class User {
 	
 	@NotBlank
 	@Column(name = "user_password")
+	@JsonIgnore
 	private String password;
 	
 	@NotBlank
@@ -41,7 +47,13 @@ public class User {
 	private String about;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonBackReference
 	private List<Post> posts = new ArrayList<Post>();
+	
+	@OneToMany
+	@JsonBackReference
+	private List<Comment> comments = new ArrayList<Comment>();
+
 
 	public int getId() {
 		return id;
@@ -81,6 +93,14 @@ public class User {
 
 	public void setAbout(String about) {
 		this.about = about;
+	}
+
+	public List<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
 	}
 
 }

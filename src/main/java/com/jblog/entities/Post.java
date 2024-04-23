@@ -1,12 +1,16 @@
 package com.jblog.entities;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -38,6 +43,10 @@ public class Post {
 	
 	@ManyToOne
 	private Category category;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "post")
+	@JsonBackReference
+	private Set<Comment> comments = new HashSet<Comment>();
 	
 	@ManyToOne
 	private User user;
@@ -106,6 +115,14 @@ public class Post {
 
 	public void setPostUpdateDate(Date postUpdateDate) {
 		this.postUpdateDate = postUpdateDate;
+	}
+
+	public Set<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(Set<Comment> comments) {
+		this.comments = comments;
 	}
 
 }

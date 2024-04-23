@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 import com.jblog.repositories.CategoryRepo;
+import com.jblog.repositories.CommentsRepo;
 import com.jblog.repositories.PostRepo;
 import com.jblog.repositories.UserRepo;
 
@@ -17,6 +18,6 @@ public class JavaBlogsApplication {
 		UserRepo repo = context.getBean(UserRepo.class);
 		CategoryRepo cRepo = context.getBean(CategoryRepo.class);
 		PostRepo postRepo = context.getBean(PostRepo.class);
-		
+		CommentsRepo comRepo = context.getBean(CommentsRepo.class);
 	}
 }
